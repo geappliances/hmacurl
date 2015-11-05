@@ -1,17 +1,17 @@
 # hmacurl
-`hmacurl` is a curl inspired command line utility that implements aws4 hmac signing for requests
+`hmacurl` is a curl-inspired command line utility that implements the AWS v4 Signature process. Currently, only the `Authorization` header method is supported.
+
+See http://docs.aws.amazon.com/general/latest/gr/signature-version-4.html for more information.
 
 <img width="10%" src="https://raw.github.com/golang-samples/gopher-vector/master/gopher.png"/>
 
 
-### build
-`git clone https://github.com/udryan10/hmacurl.git`
+## Install
+`go get github.com/geappliances/hmacurl`
 
-`go build`
-
-## run
+## Run
 ```
-$ ./hmacurl -h
+$ hmacurl -h
 Usage:
   hmacurl [OPTIONS] url
 
@@ -31,21 +31,17 @@ Application Options:
       --curl-only                                  If specified, will only
                                                    print out a curl command -
                                                    not actually run a request
-                                                   (false)
+                                                   (default: false)
   -a, --access-key=                                The access Key to use in
-                                                   HMAC signing. Can also be
-                                                   specified as an environment
-                                                   variable(export
-                                                   HMACURL_ACCESS_KEY='fasdf')
+                                                   HMAC signing.
+                                                   [$HMACURL_ACCESS_KEY]
   -s, --secret-key=                                The secret Key to use in
-                                                   HMAC signing. Can also be
-                                                   specified as an environment
-                                                   variable(export
-                                                   HMACURL_SECRET_KEY='fasdf')
+                                                   HMAC signing.
+                                                   [HMACURL_SECRET_KEY]
   -c, --credential-scope=                          The credential scope (aka
                                                    Service Name) for the
-                                                   request. Defaults to short
-                                                   host name.
+                                                   request. (default: short
+                                                   host name)
   -r, --region=                                    The region string to use in
                                                    the credential scope.
                                                    (default: us-east-1)
@@ -64,5 +60,5 @@ Arguments:
   url
 ```
 
-#### example
-` ./hmacurl -XPOST -H'Content-Type: text/html' -H'foo:bar' -a accessKey -s secret -d'{}' http://example.com`
+#### Run Example
+`hmacurl -XPOST -H'Content-Type: text/html' -H'foo:bar' -a accessKey -s secret -d'{}' http://example.com`
