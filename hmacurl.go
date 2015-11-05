@@ -19,9 +19,9 @@ import (
 	"github.com/udryan10/hmacurl/validation"
 )
 
-// positional argument
-type Url struct {
-	Url string `positional-arg-name:"url"`
+// URL captures positional arguments
+type URL struct {
+	URL string `positional-arg-name:"url"`
 }
 
 // setup flags
@@ -36,11 +36,11 @@ var opts struct {
 
 	CurlOnly bool `long:"curl-only" default:"false" description:"If specified, will only print out a curl command - not actually run a request"`
 
-	AccessKey string `short:"a" long:"access-key" default:"" description:"The access Key to use in HMAC signing. Can also be specified as an environment variable(export HMACURL_ACCESS_KEY='fasdf')"`
+	AccessKey string `short:"a" long:"access-key" required:"true" env:"HMACURL_ACCESS_KEY" description:"The Access Key to use in HMAC signing."`
 
-	SecretKey string `short:"s" long:"secret-key" default:"" description:"The secret Key to use in HMAC signing. Can also be specified as an environment variable(export HMACURL_SECRET_KEY='fasdf')"`
+	SecretKey string `short:"s" long:"secret-key" required:"true" env:"HMACURL_SECRET_KEY" description:"The Secret Key to use in HMAC signing."`
 
-	CredentialScope string `short:"c" long:"credential-scope" default:"" description:"The credential scope (aka Service Name) for the request. Defaults to short host name."`
+	CredentialScope string `short:"c" long:"credential-scope" default:"" description:"The credential scope (aka Service Name) for the request. (default: short host name)"`
 
 	Region string `short:"r" long:"region" default:"us-east-1" description:"The region to use in the credential scope."`
 
@@ -51,7 +51,7 @@ var opts struct {
 	Debug bool `long:"debug" default:"false" description:"Whether to output debug information"`
 
 	// remaining positional args
-	Args Url `positional-args:"true" required:"true"`
+	Args URL `positional-args:"true" required:"true"`
 }
 
 // will run before main() used to parse our flags
@@ -64,41 +64,15 @@ func init() {
 }
 
 func main() {
-
-	var accessKey string
-	var secretKey string
-
-	// if we werent provided these arguments, pull from environment
-	if opts.AccessKey == "" {
-		if os.Getenv("HMACURL_ACCESS_KEY") == "" {
-			fmt.Println("Please provide access key via argument or environment variable HMACURL_ACCESS_KEY")
-			os.Exit(3)
-		} else {
-			accessKey = os.Getenv("HMACURL_ACCESS_KEY")
-		}
-	} else {
-		accessKey = opts.AccessKey
-	}
-	if opts.SecretKey == "" {
-		if os.Getenv("HMACURL_SECRET_KEY") == "" {
-			fmt.Println("Please provide secret key via argument or environment variable HMACURL_SECRET_KEY")
-			os.Exit(3)
-		} else {
-			secretKey = os.Getenv("HMACURL_SECRET_KEY")
-		}
-	} else {
-		secretKey = opts.SecretKey
-	}
-
 	if validation.Method(opts.Request) == false {
 		fmt.Printf("method %s is invalid\n", opts.Request)
 		os.Exit(1)
 	}
 
-	urlString, err := url.Parse(opts.Args.Url)
+	urlString, err := url.Parse(opts.Args.URL)
 
 	if err != nil {
-		fmt.Printf("Invalid url %s\n", opts.Args.Url)
+		fmt.Printf("Invalid url %s\n", opts.Args.URL)
 		os.Exit(2)
 	}
 
@@ -164,8 +138,8 @@ func main() {
 		fmt.Println("================")
 	}
 
-	signature := signature.CalculateSignature(requestTime, stringToSign, opts.Region, credentialScope, secretKey)
-	headerMap["Authorization"] = utilities.GenerateSignedHeader(accessKey, signature, opts.Region, credentialScope, requestTime.Format("20060102"), canonicalRequest.FormatSignedHeaders(headerMap))
+	signature := signature.CalculateSignature(requestTime, stringToSign, opts.Region, credentialScope, opts.SecretKey)
+	headerMap["Authorization"] = utilities.GenerateSignedHeader(opts.AccessKey, signature, opts.Region, credentialScope, requestTime.Format("20060102"), canonicalRequest.FormatSignedHeaders(headerMap))
 	if opts.Debug == true {
 		fmt.Println("signature:")
 		fmt.Println(headerMap["Authorization"])
@@ -214,6 +188,9 @@ func main() {
 			os.Exit(4)
 		}
 		defer resp.Body.Close()
+		if resp.StatusCode >= 300 {
+			fmt.Printf("Received HTTP response: %s\n", resp.Status)
+		}
 		body, err := ioutil.ReadAll(resp.Body)
 		fmt.Println(string(body[:]))
 	} else if opts.Request == "POST" {
@@ -228,6 +205,9 @@ func main() {
 			os.Exit(4)
 		}
 		defer resp.Body.Close()
+		if resp.StatusCode >= 300 {
+			fmt.Printf("Received HTTP response: %s\n", resp.Status)
+		}
 		body, err := ioutil.ReadAll(resp.Body)
 		fmt.Println(string(body[:]))
 	}
