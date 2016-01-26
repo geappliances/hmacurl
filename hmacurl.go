@@ -115,7 +115,12 @@ func main() {
 
 	// if we were not given a Content-Type, use the default standard
 	if _, ok := headerMap["content-type"]; !ok {
-		headerMap["content-type"] = "application/octet-stream"
+		switch opts.Request {
+		case "POST":
+			headerMap["content-type"] = "application/x-www-form-urlencoded"
+		default:
+			headerMap["content-type"] = "application/octet-stream"
+		}
 	}
 
 	// where we start the signing process - pass in http method, url, headers and payload. for GET requests payload should be ""
