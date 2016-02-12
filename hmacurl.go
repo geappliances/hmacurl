@@ -11,12 +11,12 @@ import (
 	"strings"
 	"time"
 
+	"github.com/geappliances/hmacurl/canonicalRequest"
+	"github.com/geappliances/hmacurl/signString"
+	"github.com/geappliances/hmacurl/signature"
+	"github.com/geappliances/hmacurl/utilities"
+	"github.com/geappliances/hmacurl/validation"
 	"github.com/jessevdk/go-flags"
-	"github.com/udryan10/hmacurl/canonicalRequest"
-	"github.com/udryan10/hmacurl/signString"
-	"github.com/udryan10/hmacurl/signature"
-	"github.com/udryan10/hmacurl/utilities"
-	"github.com/udryan10/hmacurl/validation"
 )
 
 // URL captures positional arguments

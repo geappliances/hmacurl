@@ -6,7 +6,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/udryan10/hmacurl/utilities"
+	"github.com/geappliances/hmacurl/utilities"
 )
 
 // FormatCanonicalString encodes the query string properly for HMAC signing
