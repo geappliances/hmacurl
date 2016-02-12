@@ -7,6 +7,7 @@ import (
 	"time"
 )
 
+// ComputeHmac256 signs a message with a secret
 func ComputeHmac256(secret []byte, message string) []byte {
 	key := []byte(secret)
 	h := hmac.New(sha256.New, key)
@@ -15,15 +16,13 @@ func ComputeHmac256(secret []byte, message string) []byte {
 }
 
 func calculateSigningKey(requestTime time.Time, region, service, secret string) []byte {
-	kSecret := secret
-	//kDate := ComputeHmac256("AWS4" + kSecret, requestTime.Format("20060102"))
-	kDate := ComputeHmac256([]byte("AWS4"+kSecret), requestTime.Format("20060102"))
-	kRegion := ComputeHmac256(kDate, region)
-	kService := ComputeHmac256(kRegion, service)
-	kSigning := ComputeHmac256(kService, "aws4_request")
-	return kSigning
+	_date := ComputeHmac256([]byte("AWS4"+secret), requestTime.Format("20060102"))
+	_region := ComputeHmac256(_date, region)
+	_service := ComputeHmac256(_region, service)
+	return ComputeHmac256(_service, "aws4_request")
 }
 
+// CalculateSignature generates the HMAC signature string
 func CalculateSignature(requestTime time.Time, message, region, service, secret string) string {
 	return hex.EncodeToString(ComputeHmac256(calculateSigningKey(requestTime, region, service, secret), message))
 }

@@ -9,6 +9,7 @@ import (
 	"github.com/udryan10/hmacurl/utilities"
 )
 
+// FormatCanonicalString encodes the query string properly for HMAC signing
 func FormatCanonicalString(method string, url *url.URL, headerMap map[string]string, payload string) string {
 	// format string in HTTPRequestMethod, CanonicalURI, CanonicalQueryString, CanonicalHeaders, SignedHeaders, HexEncode(Hash(RequestPayload))
 	canonicalQueryStrings := strings.Replace(url.Query().Encode(), "+", "%20", -1)
@@ -31,6 +32,7 @@ func formatHeaders(headers map[string]string) string {
 	return headerString
 }
 
+// FormatSignedHeaders sorts and canonicalizes the HTTP headers
 func FormatSignedHeaders(headers map[string]string) string {
 	var sorted []string
 
