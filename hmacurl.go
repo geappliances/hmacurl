@@ -34,7 +34,7 @@ var opts struct {
 
 	Headers map[string]string `short:"H" optional:"true" long:"header" description:"Extra header(s) to include in the request when sending HTTP to a server. You may specify any number of extra headers. "value-name:"'Content-Type: application/json'"`
 
-	CurlOnly bool `long:"curl-only" default:"false" description:"If specified, will only print out a curl command - not actually run a request"`
+	CurlOnly bool `long:"curl-only" description:"If specified, will only print out a curl command - not actually run a request"`
 
 	AccessKey string `short:"a" long:"access-key" required:"true" env:"HMACURL_ACCESS_KEY" description:"The Access Key to use in HMAC signing."`
 
@@ -44,11 +44,11 @@ var opts struct {
 
 	Region string `short:"r" long:"region" default:"us-east-1" description:"The region to use in the credential scope."`
 
-	SkipHost bool `short:"" long:"skip-host" default:"false" description:"Do not sign the Host header (useful for non-standard HMAC implementations)"`
+	SkipHost bool `short:"" long:"skip-host" description:"Do not sign the Host header (useful for non-standard HMAC implementations)"`
 
 	Proxy string `short:"p" long:"proxy" default:"" description:"Proxy server to use if not set via environment variable."`
 
-	Debug bool `long:"debug" default:"false" description:"Whether to output debug information"`
+	Debug bool `long:"debug" description:"Whether to output debug information"`
 
 	// remaining positional args
 	Args URL `positional-args:"true" required:"true"`
