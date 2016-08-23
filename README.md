@@ -7,6 +7,9 @@ See http://docs.aws.amazon.com/general/latest/gr/signature-version-4.html for mo
 
 
 ## Install
+Requires Go 1.5 or newer to compile. If using Go 1.5, please make sure you've
+set the `$GOVENDOREXPERIMENT` environment variable to `1` before compiling.
+
 `go get github.com/geappliances/hmacurl`
 
 ## Run
